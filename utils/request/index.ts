@@ -55,8 +55,8 @@ export default class Http {
     return fetch(url, { method: "get", params }, headers);
   }
 
-  post(url: string, params?: any, headers?: any): Promise<any> {
-    return fetch(url, { method: "post", params }, headers);
+  post(url: string, options?: any, headers?: any): Promise<any> {
+    return fetch(url, { method: "post", ...options }, headers);
   }
 
   put(url: string, params?: any, headers?: any): Promise<any> {

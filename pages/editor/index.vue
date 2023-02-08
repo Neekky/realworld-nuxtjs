@@ -5,11 +5,11 @@
         <div class="col-md-10 offset-md-1 col-xs-12">
           <form>
             <fieldset>
-              <fieldset class="form-group">
+              <fieldset v-if="isQuestion" class="form-group">
                 <input
                   type="text"
                   class="form-control form-control-lg"
-                  placeholder="Article Title"
+                  placeholder="请输入问题名称"
                 />
               </fieldset>
               <fieldset class="form-group">
@@ -34,12 +34,7 @@
                 />
                 <div class="tag-list"></div>
               </fieldset>
-              <button
-                class="btn btn-lg pull-xs-right btn-primary"
-                type="button"
-              >
-                Publish Article
-              </button>
+              <el-button class="pull-xs-right" type="primary">提交</el-button>
             </fieldset>
           </form>
         </div>
@@ -49,7 +44,17 @@
 </template>
 
 <script>
-export default {};
+export default {
+  name: "Editor",
+  computed: {
+    isQuestion() {
+      return this.$route.name === "Question";
+    },
+  },
+  methods: {
+    
+  }
+};
 </script>
 
 <style></style>

@@ -40,3 +40,7 @@ npm run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+# 项目特性
+- 基于useFetch封装了请求库
+- 按需引入方式，引入了ElementUI

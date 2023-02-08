@@ -2,6 +2,16 @@
 import routes from "./router";
 
 export default defineNuxtConfig({
+  modules: [
+    // 添加pinia
+    "@pinia/nuxt",
+  ],
+  css: ["element-plus/dist/index.css"],
+  router: {
+    options: {
+      linkActiveClass: "nav-active",
+    },
+  },
   hooks: {
     "pages:extend"(r) {
       // 清除默认路由规则表

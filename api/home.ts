@@ -7,4 +7,4 @@ export default new class Home extends Request {
     getQuestionList() {
       return this.get('/question')
     }
-  }
+}

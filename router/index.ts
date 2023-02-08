@@ -34,8 +34,13 @@ export default [
         file: resolve("../pages/settings"),
       },
       {
-        path: "/editor",
-        name: "Editor",
+        path: "/question",
+        name: "Question",
+        file: resolve("../pages/editor"),
+      },
+      {
+        path: "/answer",
+        name: "Answer",
         file: resolve("../pages/editor"),
       },
       {
