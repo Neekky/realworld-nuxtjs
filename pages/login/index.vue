@@ -51,7 +51,7 @@
 import { useUserStore } from "@/stores";
 import { ElMessage } from "element-plus";
 
-const { loginApi } = useApi();
+const { userApi } = useApi();
 const userStore = useUserStore();
 
 export default {
@@ -81,6 +81,8 @@ export default {
 
   methods: {
     onSubmit() {
+      
+
       if (this.isLogin) {
         this.login();
       } else {
@@ -88,8 +90,11 @@ export default {
       }
     },
     async login() {
+      const userCookie = useCookie('user');
+      const tokenCookie = useCookie("token");
+
       // 提交表单请求登录
-      const res = await loginApi.login({
+      const res = await userApi.login({
         name: this.user.name,
         password: this.user.password,
       });
@@ -104,16 +109,19 @@ export default {
         password: "",
         errMsg: "",
       };
-
+      console.log(res, "res is")
       userStore.updateUserInfo(res.data.user);
 
+      // 防止页面因为刷新导致数据丢失，将数据持久化到Cookie
+      userCookie.value = res.data.user;
+      tokenCookie.value = res.data.token;
       // 跳转到首页
       this.$router.push("/");
     },
 
     async register() {
       // 提交表单请求登录
-      const res = await loginApi.register({
+      const res = await userApi.register({
         name: this.user.name,
         password: this.user.password,
       });

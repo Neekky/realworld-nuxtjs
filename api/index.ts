@@ -1,7 +1,7 @@
 import homeApi from "@/api/home";
-import loginApi from "@/api/login";
+import userApi from "~~/api/user";
 
 export default {
   homeApi,
-  loginApi
+  userApi
 };

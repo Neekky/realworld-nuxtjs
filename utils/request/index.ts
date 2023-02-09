@@ -26,12 +26,12 @@ const fetch = (url: string, options?: any, headers?: any): Promise<any> => {
 
   return new Promise((resolve, reject) => {
     useFetch(reqUrl, { ...options, key, headers: customHeaders, baseURL: serverConfig.baseURL, retry: 3 })
-      .then(({ data, error }: any) => {
-        if (error.value) {
-          reject(error.value);
+      .then((res: any) => {
+        if (res.error.value) {
+          reject(res.error.value);
           return;
         }
-        const value: ResOptions<any> = data.value;
+        const value: ResOptions<any> = res.data.value;
         if (!value) {
           // 这里处理错你自定义的错误，例如code !== 1
           throw createError({
@@ -44,26 +44,30 @@ const fetch = (url: string, options?: any, headers?: any): Promise<any> => {
         }
       })
       .catch((err: any) => {
-        console.log(err);
+        console.log(err, 1223);
         reject(err);
       });
   });
 };
 
 export default class Http {
-  get(url: string, params?: any, headers?: any): Promise<any> {
-    return fetch(url, { method: "get", params }, headers);
+  get(url: string, options?: any, headers?: any): Promise<any> {
+    return fetch(url, { method: "get", ...options }, headers);
   }
 
   post(url: string, options?: any, headers?: any): Promise<any> {
     return fetch(url, { method: "post", ...options }, headers);
   }
 
-  put(url: string, params?: any, headers?: any): Promise<any> {
-    return fetch(url, { method: "put", params }, headers);
+  put(url: string, options?: any, headers?: any): Promise<any> {
+    return fetch(url, { method: "put", ...options }, headers);
   }
 
-  delete(url: string, params?: any, headers?: any): Promise<any> {
-    return fetch(url, { method: "delete", params }, headers);
+  patch(url: string, options?: any, headers?: any): Promise<any> {
+    return fetch(url, { method: "PATCH", ...options }, headers);
+  }
+
+  delete(url: string, options?: any, headers?: any): Promise<any> {
+    return fetch(url, { method: "delete", ...options }, headers);
   }
 }

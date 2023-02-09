@@ -83,7 +83,6 @@
 <script setup>
 import { useUserStore } from '@/stores'
 const userStore = useUserStore()
-
 </script>
 
 <style>
