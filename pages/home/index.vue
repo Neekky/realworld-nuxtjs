@@ -9,7 +9,10 @@
 
     <div class="container page">
       <div class="row">
-        <div class="col-md-9">
+        <div
+          style="overflow: auto"
+          class="col-md-9"
+        >
           <div class="feed-toggle">
             <ul class="nav nav-pills outline-active">
               <li class="nav-item">
@@ -21,13 +24,32 @@
             </ul>
           </div>
 
-          <div v-for="item in questionList.data" :key="item._id" class="article-preview">
-            <a href="" class="preview-link">
+          <div v-for="item in list" :key="item._id" class="article-preview">
+            <router-link
+              :to="{ name: 'Profile', params: { userId: item.questioner._id } }"
+            >
+              <div class="queser-icon">
+                <el-avatar
+                  :size="30"
+                  :src="item.avatar_url || '/defaultUserIcon.jpeg'"
+                />
+                <div class="queser-icon-name">
+                  <p>{{ item.questioner.name }}</p>
+                  <p>{{ dayjs(item.updatedAt).format("YYYY-MM-DD") }}</p>
+                </div>
+              </div>
+            </router-link>
+            <router-link
+              :to="{ name: 'Article', params: { quesId: item._id } }"
+              class="preview-link"
+            >
               <h1>{{ item.title }}</h1>
               <p>{{ item.description }}</p>
               <span>查看更多...</span>
-            </a>
+            </router-link>
           </div>
+          <!-- 因为服务端渲染的缘故，只能这样处理loadmore了 -->
+          <LoadMore v-if="isBrowser" @loadMore="handleInfiniteOnLoad" :has_more="hasMore" />
         </div>
 
         <div class="col-md-3">
@@ -52,9 +74,63 @@
 </template>
 
 <script setup>
-const { homeApi } = useApi()
+import dayjs from "dayjs"
+import LoadMore from '@/components/loadmore.vue';
+import { ref, onUpdated } from "vue";
+const { homeApi } = useApi();
 
-const { data: questionList, refresh } = await useAsyncData("questionList", () => homeApi.getQuestionList());
+// 数据源
+const list = ref([]);
+
+// 每页数据size
+const perPage = 2;
+
+// 当前页码
+const page = ref(1);
+
+const loading = ref(false);
+
+const hasMore = ref(true);
+
+const isBrowser = ref(process.browser);
+
+onUpdated(() => {
+  console.log(11312312312, process.server)
+  isBrowser.value = !process.browser
+})
+
+// 获取数据
+const getList = async () => {
+  if (!hasMore.value || loading.value) {
+    return;
+  }
+  loading.value = true;
+  console.log(page, "执行了吗");
+  const res = await homeApi.getQuestionList({
+    per_page: perPage,
+    page: page,
+  });
+  if (res.code !== 200) {
+    loading.value = false;
+    return;
+  }
+  if (res.data.length < perPage) {
+    hasMore.value = false;
+  }
+  list.value = [...list.value, ...res.data];
+  loading.value = false;
+};
+
+// 触底加载
+const handleInfiniteOnLoad = () => {
+  page.value += 1;
+  getList();
+};
+
+// Nuxt异步加载
+await useAsyncData((...rest) => {
+  getList();
+});
 
 </script>
 
@@ -75,8 +151,14 @@ const { data: questionList, refresh } = await useAsyncData("questionList", () =>
   -webkit-transition-timing-function: ease-in;
   transition-timing-function: ease-in;
 }
+.queser-icon {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.queser-icon-name p {
+  margin-bottom: 0;
+  margin-left: 5px;
+}
 </style>
-
-export { };
-
-export { };

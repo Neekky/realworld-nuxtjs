@@ -46,7 +46,7 @@
             <router-link class="nav-link" to="/register">注册</router-link>
           </li>
           <li v-if="userStore.userInfo._id" class="nav-item">
-            <router-link class="nav-link" to="/profile/1">
+            <router-link class="nav-link" :to="{name: 'Profile', params: { userId: userInfo._id }}">
               <img
                 style="width: 26px"
                 class="user-pic"
@@ -81,8 +81,13 @@
 </template>
 
 <script setup>
-import { useUserStore } from '@/stores'
-const userStore = useUserStore()
+import { useUserStore } from '@/stores';
+const userStore = useUserStore();
+
+const userInfo = useCookie("user").value;
+if(userInfo) {
+  userStore.updateUserInfo(userInfo);
+}
 </script>
 
 <style>

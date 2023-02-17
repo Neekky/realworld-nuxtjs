@@ -24,7 +24,7 @@ export default [
         file: resolve("../pages/login"),
       },
       {
-        path: "/profile/:username",
+        path: "/profile",
         name: "Profile",
         file: resolve("../pages/profile"),
       },
@@ -44,7 +44,7 @@ export default [
         file: resolve("../pages/editor"),
       },
       {
-        path: "/article/:slug",
+        path: "/article",
         name: "Article",
         file: resolve("../pages/article"),
       },

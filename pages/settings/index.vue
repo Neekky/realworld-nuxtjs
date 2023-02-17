@@ -81,6 +81,12 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { useUserStore } from "@/stores";
 import { ElLoading } from "element-plus";
 
+// 使用登录校验中间件
+definePageMeta({
+  middleware: ["auth"]
+  // or middleware: 'auth'
+})
+
 const userStore = useUserStore();
 
 const { userApi } = useApi();
@@ -120,7 +126,6 @@ const updateUserById = async () => {
       userStore.userInfo._id,
       userInfo.value
     );
-    console.log(res, "21312331");
     loading.close();
     return res;
   } catch (err) {

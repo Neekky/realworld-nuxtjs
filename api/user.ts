@@ -27,6 +27,7 @@ export default new (class Login extends Request {
    * 更新用户信息
    */
   updateUserById(userId: string, params: string) {
-    return this.patch(`/users/update/${userId}`, {body: params})
+    const token = useCookie('token');
+    return this.patch(`/users/update/${userId}`, {body: params}, {Authorization: `Bearer ${token.value}`})
   }
 })();

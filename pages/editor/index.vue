@@ -44,6 +44,11 @@
 </template>
 
 <script>
+// 使用登录校验中间件
+definePageMeta({
+  middleware: ["auth"]
+  // or middleware: 'auth'
+})
 export default {
   name: "Editor",
   computed: {

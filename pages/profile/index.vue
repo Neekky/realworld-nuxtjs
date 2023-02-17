@@ -81,8 +81,14 @@
   </div>
 </template>
 
-<script>
-export default {};
+<script setup>
+const route = useRoute();
+console.log(route, "111");
+// 使用登录校验中间件
+definePageMeta({
+  middleware: ["auth"]
+  // or middleware: 'auth'
+})
 </script>
 
 <style></style>

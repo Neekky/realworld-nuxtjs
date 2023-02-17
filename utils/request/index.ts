@@ -44,7 +44,7 @@ const fetch = (url: string, options?: any, headers?: any): Promise<any> => {
         }
       })
       .catch((err: any) => {
-        console.log(err, 1223);
+        console.log(err, "后端接口报错");
         reject(err);
       });
   });

@@ -4,16 +4,23 @@ import { defineStore } from "pinia";
 export const useUserStore = defineStore("userInfo", {
   state: () => {
     // 服务端渲染期间，从客户端获取cookie，存储到pinia中
-    // const user = useCookie("user");
+    // const user = process.server ? {
+    //   _id: "",
+    //   name: "",
+    //   age: "",
+    //   avatar_url: "",
+    //   gender: "",
+    //   headline: "",
+    // } : useCookie("user").value;
     return {
       userInfo: {
-        _id: "",
-        name: "",
-        age: "",
-        avatar_url: "",
-        gender: "",
-        headline: "",
-      },
+          _id: "",
+          name: "",
+          age: "",
+          avatar_url: "",
+          gender: "",
+          headline: "",
+        }
     };
   },
   actions: {

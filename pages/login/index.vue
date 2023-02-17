@@ -51,6 +51,12 @@
 import { useUserStore } from "@/stores";
 import { ElMessage } from "element-plus";
 
+// 使用登录校验中间件
+definePageMeta({
+  middleware: ["no-auth"]
+  // or middleware: 'auth'
+})
+
 const { userApi } = useApi();
 const userStore = useUserStore();
 
@@ -81,8 +87,6 @@ export default {
 
   methods: {
     onSubmit() {
-      
-
       if (this.isLogin) {
         this.login();
       } else {
