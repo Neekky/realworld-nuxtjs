@@ -9,24 +9,29 @@
 
     <div class="container page">
       <div class="row">
-        <div
-          style="overflow: auto"
-          class="col-md-9"
-        >
+        <div style="overflow: auto" class="col-md-9">
           <div class="feed-toggle">
             <ul class="nav nav-pills outline-active">
               <li class="nav-item">
-                <a class="nav-link disabled" href="">你的问题</a>
+                <div @click="handleMuQuesClick" :class="{active: tabIndex === 0}" class="nav-link">
+                  你的问题
+                </div>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="">推荐</a>
+                <div @click="handleHomeClick" :class="{active: tabIndex === 1}" class="nav-link">推荐</div>
+              </li>
+              <li v-if="cTopic.name" class="nav-item">
+                <div :class="{active: tabIndex === 2}" class="nav-link">{{ cTopic.name }}</div>
               </li>
             </ul>
           </div>
 
-          <div v-for="item in list" :key="item._id" class="article-preview">
+          <div v-for="item in list" :key="item?._id" class="article-preview">
             <router-link
-              :to="{ name: 'Profile', params: { userId: item.questioner._id } }"
+              :to="{
+                name: 'Profile',
+                params: { userId: item.questioner?._id },
+              }"
             >
               <div class="queser-icon">
                 <el-avatar
@@ -34,13 +39,15 @@
                   :src="item.avatar_url || '/defaultUserIcon.jpeg'"
                 />
                 <div class="queser-icon-name">
-                  <p>{{ item.questioner.name }}</p>
-                  <p>{{ dayjs(item.updatedAt).format("YYYY-MM-DD") }}</p>
+                  <p>
+                    {{ item.questioner.name }}
+                    {{ dayjs(item.updatedAt).format("YYYY-MM-DD") }}
+                  </p>
                 </div>
               </div>
             </router-link>
             <router-link
-              :to="{ name: 'Article', params: { quesId: item._id } }"
+              :to="{ name: 'Article', params: { quesId: item?._id } }"
               class="preview-link"
             >
               <h1>{{ item.title }}</h1>
@@ -48,23 +55,27 @@
               <span>查看更多...</span>
             </router-link>
           </div>
-          <!-- 因为服务端渲染的缘故，只能这样处理loadmore了 -->
-          <LoadMore v-if="isBrowser" @loadMore="handleInfiniteOnLoad" :has_more="hasMore" />
+          <!-- 因为服务端渲染的缘故，只能这样处理loadmore了，并且有数据时才能显示，不然两次接口同时请求，会有问题 -->
+          <LoadMore
+            :key="cTopic._id + tabIndex"
+            v-if="isBrowser"
+            @loadMore="handleInfiniteOnLoad"
+            :has_more="hasMore"
+          />
         </div>
 
         <div class="col-md-3">
           <div class="sidebar">
-            <p>Popular Tags</p>
-
+            <p>热门话题</p>
             <div class="tag-list">
-              <a href="" class="tag-pill tag-default">programming</a>
-              <a href="" class="tag-pill tag-default">javascript</a>
-              <a href="" class="tag-pill tag-default">emberjs</a>
-              <a href="" class="tag-pill tag-default">angularjs</a>
-              <a href="" class="tag-pill tag-default">react</a>
-              <a href="" class="tag-pill tag-default">mean</a>
-              <a href="" class="tag-pill tag-default">node</a>
-              <a href="" class="tag-pill tag-default">rails</a>
+              <div
+                v-for="item in topicList"
+                :key="item?.id"
+                @click="handleTopicClick(item)"
+                class="tag-pill tag-default tag-item"
+              >
+                {{ item.name }}
+              </div>
             </div>
           </div>
         </div>
@@ -74,13 +85,15 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs"
-import LoadMore from '@/components/loadmore.vue';
-import { ref, onUpdated } from "vue";
-const { homeApi } = useApi();
+import dayjs from "dayjs";
+import LoadMore from "@/components/loadmore.vue";
+import { ref, onUpdated, onUnmounted } from "vue";
+const { homeApi, topicApi } = useApi();
 
 // 数据源
 const list = ref([]);
+
+const topicList = ref([]);
 
 // 每页数据size
 const perPage = 2;
@@ -94,44 +107,106 @@ const hasMore = ref(true);
 
 const isBrowser = ref(process.browser);
 
-onUpdated(() => {
-  console.log(11312312312, process.server)
-  isBrowser.value = !process.browser
-})
+// 当前选择topic
+const cTopic = ref({});
 
-// 获取数据
+// 当前tab
+const tabIndex = ref(1);
+
+onUpdated(() => {
+  isBrowser.value = !process.browser;
+});
+
+// 获取列表数据
 const getList = async () => {
   if (!hasMore.value || loading.value) {
     return;
   }
   loading.value = true;
-  console.log(page, "执行了吗");
   const res = await homeApi.getQuestionList({
     per_page: perPage,
     page: page,
+    topic_id: cTopic.value._id,
   });
   if (res.code !== 200) {
     loading.value = false;
     return;
   }
+  // 返回数据小于页数size
   if (res.data.length < perPage) {
     hasMore.value = false;
   }
+  // 设置列表的值
+  console.log(list.value, res.data);
   list.value = [...list.value, ...res.data];
   loading.value = false;
 };
 
+// 获取话题列表
+const getTopicList = async () => {
+  console.log(4);
+  const res = await topicApi.getTopicList({
+    per_page: 20,
+    page: 1,
+  });
+
+  if (res.code !== 200) {
+    return;
+  }
+
+  topicList.value = [...topicList.value, ...res.data];
+};
+
 // 触底加载
 const handleInfiniteOnLoad = () => {
-  page.value += 1;
+  console.log("执行了", list.value.length)
+  if (list.value.length > 0) {
+    page.value += 1;
+    getList();
+  }
+};
+
+// 处理话题item点击
+const handleTopicClick = async (data) => {
+  if (data._id === cTopic.value._id) return;
+  const res = await topicApi.getTopicQuestionList(data._id);
+  if (res.code === 200) {
+    clear();
+    cTopic.value = data;
+    getList();
+    tabIndex.value = 2;
+  }
+};
+
+// 处理推荐点击，请求首页
+const handleHomeClick = () => {
+  if (tabIndex.value === 1) return;
+  tabIndex.value = 1;
+  clear();
   getList();
 };
 
-// Nuxt异步加载
-await useAsyncData((...rest) => {
+// 请求我的问题
+const handleMuQuesClick = () => {
+  if (tabIndex.value === 0) return;
+  tabIndex.value = 0;
+  clear();
   getList();
-});
+}
 
+const clear = () => {
+  list.value = [];
+  cTopic.value = {};
+  page.value = 1;
+  loading.value = false;
+  hasMore.value = true;
+};
+
+// Nuxt异步加载
+await useAsyncData(async (...rest) => {
+  // 并发执行
+  await Promise.all([getList(), getTopicList()]);
+});
 </script>
 
 <style>
@@ -160,5 +235,9 @@ await useAsyncData((...rest) => {
 .queser-icon-name p {
   margin-bottom: 0;
   margin-left: 5px;
+}
+
+.tag-item:hover {
+  cursor: pointer;
 }
 </style>

@@ -108,19 +108,24 @@ export default {
         console.log("请求失败", res);
         return;
       }
-      this.user = {
-        name: "",
-        password: "",
-        errMsg: "",
-      };
-      console.log(res, "res is")
       userStore.updateUserInfo(res.data.user);
-
       // 防止页面因为刷新导致数据丢失，将数据持久化到Cookie
       userCookie.value = res.data.user;
       tokenCookie.value = res.data.token;
       // 跳转到首页
-      this.$router.push("/");
+      ElMessage({
+        message: "登录成功!",
+        type: "success",
+        duration: 1000,
+        onClose: () => {
+          this.user = {
+            name: "",
+            password: "",
+            errMsg: "",
+          };
+          this.$router.push("/");
+        },
+      });
     },
 
     async register() {

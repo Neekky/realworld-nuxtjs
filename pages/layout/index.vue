@@ -29,24 +29,24 @@
             <!-- Add "active" class when you're on that page" -->
             <router-link class="nav-link" to="/" href="">首页</router-link>
           </li>
-          <li v-if="userStore.userInfo._id" class="nav-item">
+          <li v-if="userStore.userInfo?._id" class="nav-item">
             <router-link class="nav-link" to="/question">
               <i class="ion-compose"></i>&nbsp;提出新问题
             </router-link>
           </li>
-          <li v-if="userStore.userInfo._id" class="nav-item">
+          <li v-if="userStore.userInfo?._id" class="nav-item">
             <router-link class="nav-link" to="/settings">
               <i class="ion-gear-a"></i>&nbsp;设置
             </router-link>
           </li>
-          <li v-if="!userStore.userInfo._id" class="nav-item">
+          <li v-if="!userStore.userInfo?._id" class="nav-item">
             <router-link class="nav-link" to="/login">登录</router-link>
           </li>
-          <li v-if="!userStore.userInfo._id" class="nav-item">
+          <li v-if="!userStore.userInfo?._id" class="nav-item">
             <router-link class="nav-link" to="/register">注册</router-link>
           </li>
-          <li v-if="userStore.userInfo._id" class="nav-item">
-            <router-link class="nav-link" :to="{name: 'Profile', params: { userId: userInfo._id }}">
+          <li v-if="userStore.userInfo?._id" class="nav-item">
+            <router-link class="nav-link" :to="{name: 'Profile', params: { userId: userInfo?._id }}">
               <img
                 style="width: 26px"
                 class="user-pic"
