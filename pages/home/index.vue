@@ -13,15 +13,27 @@
           <div class="feed-toggle">
             <ul class="nav nav-pills outline-active">
               <li class="nav-item">
-                <div @click="handleMuQuesClick" :class="{active: tabIndex === 0}" class="nav-link">
+                <div
+                  @click="handleMuQuesClick"
+                  :class="{ active: tabIndex === 0 }"
+                  class="nav-link"
+                >
                   你的问题
                 </div>
               </li>
               <li class="nav-item">
-                <div @click="handleHomeClick" :class="{active: tabIndex === 1}" class="nav-link">推荐</div>
+                <div
+                  @click="handleHomeClick"
+                  :class="{ active: tabIndex === 1 }"
+                  class="nav-link"
+                >
+                  推荐
+                </div>
               </li>
               <li v-if="cTopic.name" class="nav-item">
-                <div :class="{active: tabIndex === 2}" class="nav-link">{{ cTopic.name }}</div>
+                <div :class="{ active: tabIndex === 2 }" class="nav-link">
+                  {{ cTopic.name }}
+                </div>
               </li>
             </ul>
           </div>
@@ -46,20 +58,17 @@
                 </div>
               </div>
             </router-link>
-            <router-link
-              :to="{ name: 'Article', params: { quesId: item?._id } }"
+            <div
+              @click="handleQuesItemClick(item)"
               class="preview-link"
             >
               <h1>{{ item.title }}</h1>
               <p>{{ item.description }}</p>
               <span>查看更多...</span>
-            </router-link>
+          </div>
           </div>
           <!-- 因为服务端渲染的缘故，只能这样处理loadmore了，并且有数据时才能显示，不然两次接口同时请求，会有问题 -->
           <LoadMore
-            :key="cTopic._id + tabIndex"
-            v-if="isBrowser"
-            @loadMore="handleInfiniteOnLoad"
             :has_more="hasMore"
           />
         </div>
@@ -86,9 +95,14 @@
 
 <script setup>
 import dayjs from "dayjs";
-import LoadMore from "@/components/loadmore.vue";
-import { ref, onUpdated, onUnmounted } from "vue";
+import LoadMore from "@/components/LoadMore.vue";
+import { ref, onUpdated, onMounted } from "vue";
+import { useRouter } from 'vue-router'
+import _ from "lodash";
+
 const { homeApi, topicApi } = useApi();
+
+const router = useRouter();
 
 // 数据源
 const list = ref([]);
@@ -96,7 +110,7 @@ const list = ref([]);
 const topicList = ref([]);
 
 // 每页数据size
-const perPage = 2;
+const perPage = 6;
 
 // 当前页码
 const page = ref(1);
@@ -105,7 +119,7 @@ const loading = ref(false);
 
 const hasMore = ref(true);
 
-const isBrowser = ref(process.browser);
+const isBrowser = ref(!process.server);
 
 // 当前选择topic
 const cTopic = ref({});
@@ -113,8 +127,16 @@ const cTopic = ref({});
 // 当前tab
 const tabIndex = ref(1);
 
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll);
+});
+
 onUpdated(() => {
-  isBrowser.value = !process.browser;
+  isBrowser.value = !process.server;
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", handleScroll);
 });
 
 // 获取列表数据
@@ -137,14 +159,12 @@ const getList = async () => {
     hasMore.value = false;
   }
   // 设置列表的值
-  console.log(list.value, res.data);
   list.value = [...list.value, ...res.data];
   loading.value = false;
 };
 
 // 获取话题列表
 const getTopicList = async () => {
-  console.log(4);
   const res = await topicApi.getTopicList({
     per_page: 20,
     page: 1,
@@ -159,12 +179,19 @@ const getTopicList = async () => {
 
 // 触底加载
 const handleInfiniteOnLoad = () => {
-  console.log("执行了", list.value.length)
   if (list.value.length > 0) {
     page.value += 1;
     getList();
   }
 };
+
+const handleScroll = _.debounce(() => {
+  const scrollHeight = window.innerHeight + window.pageYOffset;
+  const documentHeight = document.documentElement.scrollHeight;
+  if (scrollHeight >= documentHeight) {
+    handleInfiniteOnLoad();
+  }
+}, 200);
 
 // 处理话题item点击
 const handleTopicClick = async (data) => {
@@ -192,6 +219,10 @@ const handleMuQuesClick = () => {
   tabIndex.value = 0;
   clear();
   getList();
+};
+
+const handleQuesItemClick = (item) => {
+  router.push({ name: 'QuestionList', query: { id: item._id, queserId: item.questioner._id } })
 }
 
 const clear = () => {
@@ -238,6 +269,10 @@ await useAsyncData(async (...rest) => {
 }
 
 .tag-item:hover {
+  cursor: pointer;
+}
+
+.preview-link:hover {
   cursor: pointer;
 }
 </style>

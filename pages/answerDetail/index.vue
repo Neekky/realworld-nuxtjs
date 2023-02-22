@@ -127,13 +127,17 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { useRoute } from 'vue-router'
+
+const route = useRoute();
+console.log(route, route.params, route.query, 12323)
 // 使用登录校验中间件
 definePageMeta({
   middleware: ["auth"]
   // or middleware: 'auth'
 })
-export default {};
+
 </script>
 
 <style></style>

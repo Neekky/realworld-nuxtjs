@@ -77,7 +77,7 @@ export default {
     };
   },
 
-  onMounted() {
+  mounted() {
     this.user = {
       name: "",
       password: "",

@@ -30,4 +30,11 @@ export default new (class Login extends Request {
     const token = useCookie('token');
     return this.patch(`/users/update/${userId}`, {body: params}, {Authorization: `Bearer ${token.value}`})
   }
+
+  /**
+   * 查询用户的粉丝
+   */
+  getUserFollowers(userId: string){
+    return this.get(`/users/${userId}/followers`)
+  }
 })();

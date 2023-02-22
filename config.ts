@@ -1,4 +1,4 @@
 export default {
-    baseURL: "http://localhost:3000"
+    baseURL: "http://zcwl.work/koa2-zhihu-api"
 }
-// "http://zcwl.work/koa2-zhihu-api"
+// "http://zcwl.work/koa2-zhihu-api" "http://localhost:3000"

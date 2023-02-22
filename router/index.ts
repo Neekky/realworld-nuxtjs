@@ -44,9 +44,9 @@ export default [
         file: resolve("../pages/editor"),
       },
       {
-        path: "/article",
-        name: "Article",
-        file: resolve("../pages/article"),
+        path: "/question-list",
+        name: "QuestionList",
+        file: resolve("../pages/questionList"),
       },
     ],
   },
