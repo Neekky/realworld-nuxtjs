@@ -54,10 +54,10 @@ const followerDetail = ref({});
 
 const route = useRoute();
 // 使用登录校验中间件
-definePageMeta({
-  middleware: ["auth"],
-  // or middleware: 'auth'
-});
+// definePageMeta({
+//   middleware: ["auth"],
+//   // or middleware: 'auth'
+// });
 
 const getQuestionDetail = async () => {
   const id = route.query.id;

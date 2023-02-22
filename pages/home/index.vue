@@ -30,9 +30,9 @@
                   推荐
                 </div>
               </li>
-              <li v-if="cTopic.name" class="nav-item">
+              <li v-if="cTopic?.name" class="nav-item">
                 <div :class="{ active: tabIndex === 2 }" class="nav-link">
-                  {{ cTopic.name }}
+                  {{ cTopic?.name }}
                 </div>
               </li>
             </ul>
@@ -52,7 +52,7 @@
                 />
                 <div class="queser-icon-name">
                   <p>
-                    {{ item.questioner.name }}
+                    {{ item.questioner?.name }}
                     {{ dayjs(item.updatedAt).format("YYYY-MM-DD") }}
                   </p>
                 </div>
@@ -83,7 +83,7 @@
                 @click="handleTopicClick(item)"
                 class="tag-pill tag-default tag-item"
               >
-                {{ item.name }}
+                {{ item?.name }}
               </div>
             </div>
           </div>
@@ -97,7 +97,7 @@
 import dayjs from "dayjs";
 import LoadMore from "@/components/LoadMore.vue";
 import { ref, onUpdated, onMounted } from "vue";
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router';
 import _ from "lodash";
 
 const { homeApi, topicApi } = useApi();
@@ -222,7 +222,7 @@ const handleMuQuesClick = () => {
 };
 
 const handleQuesItemClick = (item) => {
-  router.push({ name: 'QuestionList', query: { id: item._id, queserId: item.questioner._id } })
+  router.push({ name: 'QuestionList', query: { id: item?._id, queserId: item?.questioner?._id } })
 }
 
 const clear = () => {

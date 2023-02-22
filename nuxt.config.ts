@@ -20,6 +20,7 @@ export default defineNuxtConfig({
     },
   },
   app: {
+    baseURL: "/zhihu/",
     head: {
       title: "知乎",
       link: [

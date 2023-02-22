@@ -52,7 +52,7 @@
                 class="user-pic"
                 :src="userStore.userInfo.avatar_url || '/defaultUserIcon.jpeg'"
               />
-              {{userStore.userInfo.name}}
+              {{userStore?.userInfo?.name}}
             </router-link>
           </li>
         </ul>

@@ -53,7 +53,7 @@ export default {
   name: "Editor",
   computed: {
     isQuestion() {
-      return this.$route.name === "Question";
+      return this.$route?.name === "Question";
     },
   },
   methods: {

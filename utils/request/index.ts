@@ -1,6 +1,7 @@
 // 基于 useFetch 封装请求库
 import { hash } from "ohash";
 import serverConfig from "@/config";
+import { mode } from "process";
 
 // 后端返回的数据类型
 export interface ResOptions<T> {

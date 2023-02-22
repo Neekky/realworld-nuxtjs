@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "cross-env mode=production nuxt build --port=9008",
+    "build": "cross-env mode=production port=9008 nuxt build",
     "dev": "cross-env mode=development nuxt dev --port=3001",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
